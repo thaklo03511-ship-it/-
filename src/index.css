@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Prompt', 'Sarabun', sans-serif;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Print Specific Rules for Thai Stock Cards */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 6mm 8mm;
+  }
+  
+  html, body {
+    background: white !important;
+    color: black !important;
+    font-size: 10pt;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide regular UI elements when printing */
+  .no-print,
+  header,
+  footer,
+  nav {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Unfold modal container so it prints full height across all pages */
+  .print-container-modal {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .print-modal-content {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .print-scroll-area {
+    overflow: visible !important;
+    height: auto !important;
+    background: white !important;
+    padding: 0 !important;
+  }
+
+  .stock-card-print-box {
+    border: 1.5px solid #000 !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .stock-card-table th,
+  .stock-card-table td {
+    border: 1px solid #000 !important;
+    padding: 2px 4px !important;
+    font-size: 9pt !important;
+    color: #000 !important;
+  }
+
+  .print-page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
