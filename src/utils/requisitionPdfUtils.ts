@@ -181,7 +181,7 @@ export function saveRequisitions(slips: RequisitionSlip[]): void {
  */
 export function generateRequisitionSlipHTML(
   slip: RequisitionSlip,
-  hospitalName: string = 'โรงพยาบาลส่งเสริมสุขภาพตำบล / กลุ่มงานการแพทย์แผนไทย'
+  hospitalName: string = 'คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ'
 ): string {
   const formattedDate = formatDateThai(slip.date);
   const totalBahtText = numberToThaiBahtText(slip.totalValue);
@@ -531,7 +531,7 @@ export function generateRequisitionSlipHTML(
  */
 export function generateStandaloneRequisitionHTML(
   slip: RequisitionSlip,
-  hospitalName: string = 'โรงพยาบาลส่งเสริมสุขภาพตำบล / กลุ่มงานการแพทย์แผนไทย'
+  hospitalName: string = 'คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ'
 ): string {
   const slipInner = generateRequisitionSlipHTML(slip, hospitalName);
   return `<!DOCTYPE html>
@@ -667,7 +667,7 @@ export function downloadRequisitionHTML(
  */
 export async function downloadRequisitionPDF(
   slip: RequisitionSlip,
-  hospitalName: string = 'โรงพยาบาลส่งเสริมสุขภาพตำบล / กลุ่มงานการแพทย์แผนไทย'
+  hospitalName: string = 'คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ'
 ): Promise<boolean> {
   let container: HTMLDivElement | null = null;
   try {

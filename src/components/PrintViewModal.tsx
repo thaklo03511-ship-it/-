@@ -250,7 +250,7 @@ export const PrintViewModal: React.FC<PrintViewModalProps> = ({
                 </span>
               </h3>
               <p className="text-xs text-slate-500">
-                จัดรูปแบบ 2x2 ต่อหน้า A4 แนวนอน ตรงตามแบบฟอร์มเอกสารยาสมุนไพร
+                คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ • จัดรูปแบบ 2x2 ต่อหน้า A4 แนวนอน ตรงตามแบบฟอร์มเอกสารยาสมุนไพร
               </p>
             </div>
           </div>

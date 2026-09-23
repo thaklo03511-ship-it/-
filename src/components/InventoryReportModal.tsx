@@ -200,7 +200,7 @@ export const InventoryReportModal: React.FC<InventoryReportModalProps> = ({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-emerald-100/80 mt-0.5">
-                ข้อมูล ณ วันที่ {todayThai} | สรุปมูลค่าคลัง ทะเบียนรายชื่อยาสมุนไพรทุกรายการ และศูนย์ดาวน์โหลดไฟล์
+                คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ • ข้อมูล ณ วันที่ {todayThai} | สรุปมูลค่าคลัง ทะเบียนรายชื่อยาสมุนไพร และศูนย์ดาวน์โหลดไฟล์
               </p>
             </div>
           </div>

@@ -1152,7 +1152,7 @@ export function generateExecutiveReportHTML(herbs: HerbItem[]): string {
     <div class="header-bar">
       <div class="header-title">
         <h1>รายงานสรุปการบริหารคลังและรายชื่อยาสมุนไพร</h1>
-        <p>กลุ่มงานการแพทย์แผนไทยและการแพทย์ทางเลือก โรงพยาบาล / หน่วยบริการสาธารณสุข</p>
+        <p>คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ | งานการแพทย์แผนไทยและการแพทย์ทางเลือก</p>
         <p style="font-size: 11px; color: #64748b; margin-top: 2px;">มาตรฐานการจัดการคลังยาตามหลัก Good Storage Practice (GSP) &amp; FEFO</p>
       </div>
       <div class="badge-date">
@@ -1404,7 +1404,7 @@ export function generateStockCardsHTML(herbs: HerbItem[], fillTransactions = tru
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Card สมุนไพร (บัตรสต๊อกยา)</title>
+  <title>Stock Card คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1626,7 +1626,7 @@ export function generateStockCardsHTML(herbs: HerbItem[], fillTransactions = tru
   <div class="screen-toolbar">
     <div>
       <h1>พิมพ์บัตรสต๊อกการ์ดยาสมุนไพร (Stock Card)</h1>
-      <p>จัดพิมพ์ 4 บัตรต่อหน้า A4 แนวนอน (2x2 Grid) ตรงตามมาตรฐานแบบฟอร์มโรงพยาบาล</p>
+      <p>จัดพิมพ์ 4 บัตรต่อหน้า A4 แนวนอน (2x2 Grid) • คลังยาสมุนไพร รพ.สต.บ้านท่าคล้อ</p>
     </div>
     <div style="display: flex; align-items: center;">
       <button class="btn-print" onclick="window.print()">

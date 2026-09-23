@@ -32,7 +32,15 @@ import { InventoryReportModal } from './components/InventoryReportModal';
 import { RequisitionModal } from './components/RequisitionModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Sidebar } from './components/Sidebar';
-import { Search, PlusCircle, RotateCcw, FileSpreadsheet, HardDrive, Printer, Building2, FileDown } from 'lucide-react';
+import { LoginScreen } from './components/LoginScreen';
+import { ChangePinModal } from './components/ChangePinModal';
+import { UnlockModal } from './components/UnlockModal';
+import { 
+  getAuthSession, 
+  clearAuthSession, 
+  AuthRole 
+} from './utils/authUtils';
+import { Search, PlusCircle, RotateCcw, FileSpreadsheet, HardDrive, Printer, Building2, FileDown, CheckCircle2, ShieldAlert } from 'lucide-react';
 
 export default function App() {
   // Load herbs from localStorage or default data
@@ -82,6 +90,48 @@ export default function App() {
   const [isRequisitionOpen, setIsRequisitionOpen] = useState<boolean>(false);
   const [requisitionPreSelectedHerb, setRequisitionPreSelectedHerb] = useState<HerbItem | null>(null);
   const [printHerb, setPrintHerb] = useState<HerbItem | null>(null);
+
+  // Authentication & Security State
+  const [authSession, setAuthSession] = useState<{ isAuthenticated: boolean; role: AuthRole } | null>(() => {
+    return getAuthSession();
+  });
+  const [isChangePinOpen, setIsChangePinOpen] = useState<boolean>(false);
+  const [isUnlockOpen, setIsUnlockOpen] = useState<boolean>(false);
+  const [unlockActionTitle, setUnlockActionTitle] = useState<string>('แก้ไขข้อมูลในระบบ');
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const [toastNotification, setToastNotification] = useState<string>('');
+
+  const showToast = (msg: string) => {
+    setToastNotification(msg);
+    setTimeout(() => {
+      setToastNotification('');
+    }, 3500);
+  };
+
+  const requireAdmin = (actionTitle: string, action: () => void) => {
+    if (authSession?.role === 'admin') {
+      action();
+    } else {
+      setUnlockActionTitle(actionTitle);
+      setPendingAction(() => action);
+      setIsUnlockOpen(true);
+    }
+  };
+
+  const handleLockScreen = () => {
+    clearAuthSession();
+    setAuthSession(null);
+  };
+
+  const handleUnlockedAdmin = () => {
+    setAuthSession({ isAuthenticated: true, role: 'admin' });
+    showToast('ปลดล็อกสิทธิ์เจ้าหน้าที่เรียบร้อยแล้ว');
+    if (pendingAction) {
+      const act = pendingAction;
+      setPendingAction(null);
+      act();
+    }
+  };
 
   // Categories list
   const categories = useMemo<HerbCategory[]>(() => {
@@ -227,39 +277,53 @@ export default function App() {
 
   // Add new herb medicine handler
   const handleSaveNewHerb = (newHerb: HerbItem) => {
-    setHerbs(prev => [newHerb, ...prev]);
+    requireAdmin('เพิ่มรายการยาสมุนไพรใหม่', () => {
+      setHerbs(prev => [newHerb, ...prev]);
+      showToast(`เพิ่มยา "${newHerb.name}" เรียบร้อยแล้ว`);
+    });
   };
 
   // Reset database back to default 41 medicines
   const handleResetData = () => {
-    if (window.confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็น 41 รายการสมุนไพรเริ่มต้นใช่หรือไม่? (ข้อมูลที่บันทึกไว้จะถูกแทนที่)')) {
-      setHerbs(INITIAL_HERBS_DATA);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_HERBS_DATA));
-    }
+    requireAdmin('รีเซ็ตข้อมูลเริ่มต้น 41 รายการ', () => {
+      if (window.confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็น 41 รายการสมุนไพรเริ่มต้นใช่หรือไม่? (ข้อมูลที่บันทึกไว้จะถูกแทนที่)')) {
+        setHerbs(INITIAL_HERBS_DATA);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_HERBS_DATA));
+        showToast('รีเซ็ตข้อมูลเป็น 41 รายการเริ่มต้นเรียบร้อยแล้ว');
+      }
+    });
   };
 
   // Clear all transaction histories, lot numbers, exp dates, and stock counts to start real inventory intake
   const handleClearAllHistory = () => {
-    if (window.confirm('คุณต้องการลบประวัติรับ-จ่าย เลขที่ Lot วันหมดอายุ ขนาดบรรจุ และราคาต่อหน่วยให้ว่างเปล่าเป็น 0 ทั้งหมดใช่หรือไม่?\n\n(รายชื่อยาสมุนไพร 41 รายการจะยังคงอยู่ครบถ้วน เพื่อให้ท่านพร้อมเริ่มบันทึกสต๊อกยาจริงใหม่ทั้งหมด)')) {
-      const zeroed = resetAllHerbsHistoryToZero(herbs);
-      setHerbs(zeroed);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(zeroed));
-      if (activeStockCardHerb) {
-        const found = zeroed.find(h => h.id === activeStockCardHerb.id);
-        if (found) setActiveStockCardHerb(found);
+    requireAdmin('ล้างประวัติรับ-จ่ายและสต๊อกเป็น 0', () => {
+      if (window.confirm('คุณต้องการลบประวัติรับ-จ่าย เลขที่ Lot วันหมดอายุ ขนาดบรรจุ และราคาต่อหน่วยให้ว่างเปล่าเป็น 0 ทั้งหมดใช่หรือไม่?\n\n(รายชื่อยาสมุนไพร 41 รายการจะยังคงอยู่ครบถ้วน เพื่อให้ท่านพร้อมเริ่มบันทึกสต๊อกยาจริงใหม่ทั้งหมด)')) {
+        const zeroed = resetAllHerbsHistoryToZero(herbs);
+        setHerbs(zeroed);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(zeroed));
+        if (activeStockCardHerb) {
+          const found = zeroed.find(h => h.id === activeStockCardHerb.id);
+          if (found) setActiveStockCardHerb(found);
+        }
+        showToast('ล้างประวัติรับ-จ่ายและยอดสต๊อกเป็น 0 เรียบร้อยแล้ว');
       }
-    }
+    });
   };
 
   // Restore imported data
   const handleImportData = (importedData: HerbItem[]) => {
-    setHerbs(importedData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
+    requireAdmin('นำเข้าข้อมูลสำรอง (Backup)', () => {
+      setHerbs(importedData);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
+      showToast('นำเข้าข้อมูลสำรองเรียบร้อยแล้ว');
+    });
   };
 
   const handleOpenQuickTxForHerb = (herb: HerbItem) => {
-    setQuickTxHerb(herb);
-    setIsQuickTxOpen(true);
+    requireAdmin('บันทึก รับ-จ่าย ยาสมุนไพร', () => {
+      setQuickTxHerb(herb);
+      setIsQuickTxOpen(true);
+    });
   };
 
   const handlePrintSingleHerb = (herb: HerbItem) => {
@@ -322,6 +386,18 @@ export default function App() {
 
 
 
+  if (!authSession || !authSession.isAuthenticated) {
+    return (
+      <LoginScreen
+        onSuccess={(role) => {
+          setAuthSession({ isAuthenticated: true, role });
+          showToast(role === 'admin' ? 'ยินดีต้อนรับเจ้าหน้าที่ เข้าสู่ระบบสำเร็จ' : 'เข้าสู่ระบบในโหมดดูข้อมูลอย่างเดียว');
+        }}
+        hospitalName="รพ.สต.บ้านท่าคล้อ"
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-20 lg:pb-10 text-slate-800 antialiased selection:bg-emerald-100 selection:text-emerald-900">
       
@@ -331,12 +407,24 @@ export default function App() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onOpenQuickTx={() => {
-          setQuickTxHerb(null);
-          setIsQuickTxOpen(true);
+          requireAdmin('บันทึก รับ-จ่าย ยาสมุนไพร', () => {
+            setQuickTxHerb(null);
+            setIsQuickTxOpen(true);
+          });
         }}
-        onOpenAddHerb={() => setIsAddHerbOpen(true)}
+        onOpenAddHerb={() => {
+          requireAdmin('เพิ่มรายการยาสมุนไพร', () => setIsAddHerbOpen(true));
+        }}
         onOpenRequisitionModal={() => handleOpenRequisition()}
         onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
+        authRole={authSession.role}
+        onLockScreen={handleLockScreen}
+        onOpenChangePin={() => setIsChangePinOpen(true)}
+        onOpenUnlock={() => {
+          setUnlockActionTitle('ปลดล็อกสิทธิ์เจ้าหน้าที่');
+          setPendingAction(null);
+          setIsUnlockOpen(true);
+        }}
       />
 
       {/* Main Layout Area: Sidebar on the left + Main Content on the right */}
@@ -347,10 +435,14 @@ export default function App() {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           onOpenQuickTx={() => {
-            setQuickTxHerb(null);
-            setIsQuickTxOpen(true);
+            requireAdmin('บันทึก รับ-จ่าย ยาสมุนไพร', () => {
+              setQuickTxHerb(null);
+              setIsQuickTxOpen(true);
+            });
           }}
-          onOpenAddHerb={() => setIsAddHerbOpen(true)}
+          onOpenAddHerb={() => {
+            requireAdmin('เพิ่มรายการยาสมุนไพร', () => setIsAddHerbOpen(true));
+          }}
           onOpenRequisitionModal={() => handleOpenRequisition()}
           onOpenInventoryReport={() => setIsInventoryReportOpen(true)}
           onOpenPrintView={() => {
@@ -371,6 +463,14 @@ export default function App() {
           onViewModeChange={setViewMode}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
+          authRole={authSession.role}
+          onLockScreen={handleLockScreen}
+          onOpenChangePin={() => setIsChangePinOpen(true)}
+          onOpenUnlock={() => {
+            setUnlockActionTitle('ปลดล็อกสิทธิ์เจ้าหน้าที่');
+            setPendingAction(null);
+            setIsUnlockOpen(true);
+          }}
         />
 
         {/* Main Content View */}
@@ -506,8 +606,10 @@ export default function App() {
         lowStockCount={stats.lowStockCount}
         expiringCount={stats.expiringCount + stats.expiredCount}
         onOpenQuickTx={() => {
-          setQuickTxHerb(null);
-          setIsQuickTxOpen(true);
+          requireAdmin('บันทึก รับ-จ่าย ยาสมุนไพร', () => {
+            setQuickTxHerb(null);
+            setIsQuickTxOpen(true);
+          });
         }}
         onToggleSidebar={() => setIsSidebarOpen(true)}
         onOpenRequisitionModal={() => handleOpenRequisition()}
@@ -526,6 +628,11 @@ export default function App() {
             setIsPrintViewOpen(true);
           }}
           onOpenRequisitionModal={(herb) => handleOpenRequisition(herb)}
+          readOnly={authSession.role === 'viewer'}
+          onRequireUnlock={(actionName) => {
+            setUnlockActionTitle(actionName);
+            setIsUnlockOpen(true);
+          }}
         />
       )}
 
@@ -601,6 +708,31 @@ export default function App() {
         onApplyStockDeduction={handleApplyStockDeduction}
       />
 
+      {/* SECURITY MODAL 1: Change Staff Access PIN */}
+      <ChangePinModal
+        isOpen={isChangePinOpen}
+        onClose={() => setIsChangePinOpen(false)}
+        onSuccessToast={showToast}
+      />
+
+      {/* SECURITY MODAL 2: Unlock Administrative / Edit Privileges */}
+      <UnlockModal
+        isOpen={isUnlockOpen}
+        onClose={() => {
+          setIsUnlockOpen(false);
+          setPendingAction(null);
+        }}
+        onUnlocked={handleUnlockedAdmin}
+        actionTitle={unlockActionTitle}
+      />
+
+      {/* Floating System Toast Notification */}
+      {toastNotification && (
+        <div className="fixed bottom-16 sm:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-slate-900 text-white shadow-2xl border border-slate-700 text-xs sm:text-sm animate-fadeIn">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastNotification}</span>
+        </div>
+      )}
 
     </div>
   );

@@ -18,9 +18,15 @@ import {
   LayoutGrid,
   Table,
   CheckCircle2,
-  X
+  X,
+  Lock,
+  Unlock,
+  KeyRound,
+  ShieldCheck,
+  ShieldAlert
 } from 'lucide-react';
 import { ViewFilter, HerbCategory, StockSummaryStats } from '../types';
+import { AuthRole } from '../utils/authUtils';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -46,6 +52,11 @@ interface SidebarProps {
   onViewModeChange: (mode: 'grid' | 'table') => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  // Auth & Security
+  authRole?: AuthRole;
+  onLockScreen?: () => void;
+  onOpenChangePin?: () => void;
+  onOpenUnlock?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -70,6 +81,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onViewModeChange,
   isCollapsed = false,
   onToggleCollapse,
+  authRole = 'admin',
+  onLockScreen,
+  onOpenChangePin,
+  onOpenUnlock,
 }) => {
   return (
     <>
@@ -437,6 +452,79 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <RotateCcw className="w-3.5 h-3.5 text-rose-500" />
                   <span>ล้างประวัติ &amp; Lot เป็น 0 (เริ่มระบบจริง)</span>
                 </button>
+              )}
+            </div>
+          )}
+
+          {/* Section 4: Security & Lock */}
+          {!isCollapsed && (
+            <div className="pt-2 border-t border-slate-100 space-y-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 px-2 block">
+                ความปลอดภัย &amp; รหัสผ่าน
+              </span>
+
+              {authRole === 'admin' ? (
+                <div className="mx-1 p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-xs space-y-2">
+                  <div className="flex items-center gap-1.5 text-emerald-800 font-semibold">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>สิทธิ์เจ้าหน้าที่ (แก้ไขได้)</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+                    {onOpenChangePin && (
+                      <button
+                        type="button"
+                        onClick={onOpenChangePin}
+                        className="py-1 px-2 rounded-lg bg-white hover:bg-slate-50 border border-emerald-200 text-slate-700 font-medium text-[11px] flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <KeyRound className="w-3 h-3 text-emerald-600" />
+                        <span>เปลี่ยนรหัส</span>
+                      </button>
+                    )}
+                    {onLockScreen && (
+                      <button
+                        type="button"
+                        onClick={onLockScreen}
+                        className="py-1 px-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-[11px] flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <Lock className="w-3 h-3" />
+                        <span>ล็อกหน้าจอ</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="mx-1 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-2">
+                  <div className="flex items-center gap-1.5 text-amber-800 font-semibold">
+                    <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>โหมดดูข้อมูลอย่างเดียว</span>
+                  </div>
+                  <p className="text-[10px] text-amber-700 leading-tight">
+                    ป้องกันบุคคลภายนอกแก้ไขข้อมูล ต้องใช้รหัสผ่านเจ้าหน้าที่เพื่อปลดล็อก
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+                    {onOpenUnlock && (
+                      <button
+                        type="button"
+                        onClick={onOpenUnlock}
+                        className="py-1 px-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-medium text-[11px] flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <Unlock className="w-3 h-3" />
+                        <span>ปลดล็อก</span>
+                      </button>
+                    )}
+                    {onLockScreen && (
+                      <button
+                        type="button"
+                        onClick={onLockScreen}
+                        className="py-1 px-2 rounded-lg bg-white hover:bg-slate-50 border border-amber-200 text-slate-700 font-medium text-[11px] flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <Lock className="w-3 h-3 text-slate-500" />
+                        <span>ล็อกระบบ</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           )}

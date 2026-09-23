@@ -46,6 +46,8 @@ interface StockCardDetailModalProps {
   onUpdateHerb: (updatedHerb: HerbItem) => void;
   onPrintCard: (herb: HerbItem, lotId?: string) => void;
   onOpenRequisitionModal?: (herb: HerbItem) => void;
+  readOnly?: boolean;
+  onRequireUnlock?: (actionName: string) => void;
 }
 
 export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
@@ -54,6 +56,8 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
   onUpdateHerb,
   onPrintCard,
   onOpenRequisitionModal,
+  readOnly = false,
+  onRequireUnlock,
 }) => {
   // View mode: 'card' (single lot Stock Card) vs 'all-lots' (table overview of all batches)
   const [viewMode, setViewMode] = useState<'card' | 'all-lots'>('card');
@@ -192,6 +196,15 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
     e.preventDefault();
     setTxError('');
 
+    if (readOnly) {
+      if (onRequireUnlock) {
+        onRequireUnlock('บันทึก รับ-จ่าย ยาสมุนไพร');
+      } else {
+        setTxError('อยู่ในโหมดดูข้อมูลอย่างเดียว กรุณาปลดล็อกด้วยรหัสผ่านเจ้าหน้าที่เพื่อแก้ไข');
+      }
+      return;
+    }
+
     const qty = parseFloat(txAmount);
     if (isNaN(qty) || qty <= 0) {
       setTxError('กรุณาระบุจำนวนที่ถูกต้องมากกว่า 0');
@@ -318,6 +331,16 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
   // Handle adding a new Lot (unlimited batches)
   const handleCreateLot = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (readOnly) {
+      if (onRequireUnlock) {
+        onRequireUnlock('เพิ่มล็อตการผลิตใหม่');
+      } else {
+        alert('อยู่ในโหมดดูข้อมูลอย่างเดียว กรุณาปลดล็อกด้วยรหัสผ่านเจ้าหน้าที่เพื่อแก้ไข');
+      }
+      return;
+    }
+
     if (!newLotNo.trim()) {
       alert('กรุณากรอกเลขที่ Lot.No');
       return;
@@ -427,6 +450,17 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
             <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
               <Package className="w-3.5 h-3.5" /> Stock Card ยาสมุนไพร
             </span>
+            {readOnly && (
+              <button
+                type="button"
+                onClick={() => onRequireUnlock && onRequireUnlock('แก้ไขข้อมูลสต๊อกยา')}
+                className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 flex items-center gap-1 cursor-pointer transition-colors"
+                title="คลิกเพื่อปลดล็อกสิทธิ์แก้ไขด้วยรหัสผ่านเจ้าหน้าที่"
+              >
+                <span>🔒 โหมดอ่านอย่างเดียว</span>
+                <span className="underline ml-0.5">ปลดล็อก</span>
+              </button>
+            )}
             <span className="text-xs text-slate-600 hidden sm:inline-block">
               หมวดหมู่: <strong className="text-slate-800">{herb.category}</strong>
             </span>

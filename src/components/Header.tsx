@@ -5,9 +5,15 @@ import {
   Menu,
   ArrowLeftRight,
   PlusCircle,
-  FileDown
+  FileDown,
+  Lock,
+  Unlock,
+  KeyRound,
+  ShieldCheck,
+  Eye
 } from 'lucide-react';
 import { HerbItem } from '../types';
+import { AuthRole } from '../utils/authUtils';
 
 interface HeaderProps {
   herbs: HerbItem[];
@@ -17,6 +23,10 @@ interface HeaderProps {
   onOpenAddHerb?: () => void;
   onOpenRequisitionModal?: () => void;
   onToggleSidebar?: () => void;
+  authRole?: AuthRole;
+  onLockScreen?: () => void;
+  onOpenChangePin?: () => void;
+  onOpenUnlock?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,6 +36,10 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddHerb,
   onOpenRequisitionModal,
   onToggleSidebar,
+  authRole = 'admin',
+  onLockScreen,
+  onOpenChangePin,
+  onOpenUnlock,
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs no-print">
@@ -66,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Right: Search Bar & Fast Shortcut */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-md justify-end">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl justify-end">
             {/* Search Input */}
             <div className="relative w-full max-w-xs sm:max-w-sm">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -98,6 +112,44 @@ export const Header: React.FC<HeaderProps> = ({
               <ArrowLeftRight className="w-4 h-4" />
               <span className="hidden sm:inline">รับ - จ่าย</span>
             </button>
+
+            {/* Security / Auth Status & Lock Button */}
+            <div className="flex items-center gap-1.5 pl-1 border-l border-slate-200">
+              {authRole === 'admin' ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={onOpenChangePin}
+                    className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-700 hover:bg-slate-100 transition-colors hidden sm:flex items-center gap-1 text-xs cursor-pointer"
+                    title="เปลี่ยนรหัสผ่านเจ้าหน้าที่"
+                  >
+                    <KeyRound className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="hidden md:inline text-[11px] font-medium text-slate-600">รหัสผ่าน</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={onLockScreen}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-rose-700 bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded-xl transition-all cursor-pointer"
+                    title="ล็อกหน้าจอทันทีเพื่อป้องกันผู้อื่นแก้ไขข้อมูล"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="hidden sm:inline">ล็อกระบบ</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onOpenUnlock}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition-all cursor-pointer animate-pulse"
+                  title="คลิกเพื่อป้อนรหัสผ่านปลดล็อกสิทธิ์แก้ไขข้อมูล"
+                >
+                  <Unlock className="w-3.5 h-3.5 text-amber-600" />
+                  <span>ปลดล็อกแก้ไข</span>
+                </button>
+              )}
+            </div>
+
           </div>
 
         </div>
