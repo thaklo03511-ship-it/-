@@ -75,11 +75,11 @@ export const RequisitionModal: React.FC<RequisitionModalProps> = ({
     new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
   );
   const [department, setDepartment] = useState<string>('งานบริการการแพทย์แผนไทย รพ.สต.บ้านท่าคล้อ');
-  const [requesterName, setRequesterName] = useState<string>('พท.ป. ศิริพร กลิ่นมาลัย');
-  const [requesterPosition, setRequesterPosition] = useState<string>('แพทย์แผนไทยปฏิบัติการ');
-  const [dispenserName, setDispenserName] = useState<string>('ภญ. พิมพ์มาดา เจริญสุข');
-  const [receiverName, setReceiverName] = useState<string>('พท.ป. ศิริพร กลิ่นมาลัย');
-  const [approverName, setApproverName] = useState<string>('นพ. ชัยวัฒน์ วงศ์วิวัฒน์');
+  const [requesterName, setRequesterName] = useState<string>('');
+  const [requesterPosition, setRequesterPosition] = useState<string>('');
+  const [dispenserName, setDispenserName] = useState<string>('');
+  const [receiverName, setReceiverName] = useState<string>('');
+  const [approverName, setApproverName] = useState<string>('');
   const [purpose, setPurpose] = useState<string>(
     'เพื่อสำรองจ่ายผู้ป่วยนอก คลินิกการแพทย์แผนไทย ประจำสัปดาห์'
   );
@@ -754,46 +754,59 @@ export const RequisitionModal: React.FC<RequisitionModalProps> = ({
                   </div>
                 </div>
 
-                {/* Signees Info Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-200/80">
-                  <div>
-                    <label className="block text-slate-600 font-medium mb-1">(1) ชื่อผู้ขอเบิก *</label>
-                    <input
-                      type="text"
-                      value={requesterName}
-                      onChange={(e) => setRequesterName(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
-                    />
+                {/* Signees Info Grid & Notice */}
+                <div className="pt-2 border-t border-slate-200/80 space-y-2">
+                  <div className="p-2.5 bg-amber-50/80 border border-amber-200/90 rounded-lg flex items-center gap-2 text-[11px] text-amber-900">
+                    <Edit3 className="w-4 h-4 text-amber-700 shrink-0" />
+                    <span>
+                      <strong>หลักฐานการลงนามท้ายใบเบิก 4 ฝ่าย:</strong> ระบบจะพิมพ์เป็นเครื่องหมายจุด <code className="bg-amber-100/80 px-1 py-0.5 rounded font-mono font-bold text-amber-950">(...................................................)</code> แทนชื่อและตำแหน่งของผู้ขอเบิก, ผู้จ่ายยา (คลังยา), ผู้รับยา และผู้อนุมัติ เพื่อให้ลงลายมือชื่อและเขียนชื่อ-ตำแหน่งด้วยตนเอง
+                    </span>
                   </div>
 
-                  <div>
-                    <label className="block text-slate-600 font-medium mb-1">ตำแหน่งผู้ขอเบิก</label>
-                    <input
-                      type="text"
-                      value={requesterPosition}
-                      onChange={(e) => setRequesterPosition(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
-                    />
-                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                    <div>
+                      <label className="block text-slate-600 font-medium mb-1">ชื่อผู้ขอเบิก (ระบุในหัวเอกสาร)</label>
+                      <input
+                        type="text"
+                        value={requesterName}
+                        onChange={(e) => setRequesterName(e.target.value)}
+                        placeholder="เว้นว่างได้ หรือระบุชื่อ"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-slate-600 font-medium mb-1">(2) ผู้จ่ายยา (เจ้าหน้าที่คลัง)</label>
-                    <input
-                      type="text"
-                      value={dispenserName}
-                      onChange={(e) => setDispenserName(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
-                    />
-                  </div>
+                    <div>
+                      <label className="block text-slate-600 font-medium mb-1">ตำแหน่งผู้ขอเบิก</label>
+                      <input
+                        type="text"
+                        value={requesterPosition}
+                        onChange={(e) => setRequesterPosition(e.target.value)}
+                        placeholder="เว้นว่างได้ หรือระบุตำแหน่ง"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-slate-600 font-medium mb-1">(4) ผู้อนุมัติ (หัวหน้ากลุ่มงาน)</label>
-                    <input
-                      type="text"
-                      value={approverName}
-                      onChange={(e) => setApproverName(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
-                    />
+                    <div>
+                      <label className="block text-slate-600 font-medium mb-1">ผู้จ่ายยา (คลังยา)</label>
+                      <input
+                        type="text"
+                        value={dispenserName}
+                        onChange={(e) => setDispenserName(e.target.value)}
+                        placeholder="เว้นว่างได้"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-600 font-medium mb-1">ผู้อนุมัติ</label>
+                      <input
+                        type="text"
+                        value={approverName}
+                        onChange={(e) => setApproverName(e.target.value)}
+                        placeholder="เว้นว่างได้"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

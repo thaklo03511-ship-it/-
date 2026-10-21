@@ -435,68 +435,68 @@ export function generateRequisitionSlipHTML(
           
           <!-- Column 1: ผู้ขอเบิก -->
           <div style="flex: 1; text-align: center; border-right: 1px dashed #cbd5e1; padding-right: 8px;">
-            <div style="font-size: 12px; color: #475569; margin-bottom: 30px;">
+            <div style="font-size: 12px; color: #475569; margin-bottom: 32px;">
               (1) ผู้ขอเบิก
             </div>
             <div style="border-bottom: 1px dotted #64748b; width: 85%; margin: 0 auto 6px auto;"></div>
-            <div style="font-size: 12px; font-weight: bold; color: #0f172a;">
-              (${slip.requesterName || '...................................................'})
+            <div style="font-size: 12px; color: #334155;">
+              (...................................................)
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-              ตำแหน่ง: ${slip.requesterPosition || '...........................................'}
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+              ตำแหน่ง ...........................................
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
               วันที่: ....../....../............
             </div>
           </div>
 
           <!-- Column 2: ผู้จ่ายยา -->
           <div style="flex: 1; text-align: center; border-right: 1px dashed #cbd5e1; padding-right: 8px;">
-            <div style="font-size: 12px; color: #475569; margin-bottom: 30px;">
+            <div style="font-size: 12px; color: #475569; margin-bottom: 32px;">
               (2) ผู้จ่ายยา (คลังยา)
             </div>
             <div style="border-bottom: 1px dotted #64748b; width: 85%; margin: 0 auto 6px auto;"></div>
-            <div style="font-size: 12px; font-weight: bold; color: #0f172a;">
-              (${slip.dispenserName || '...................................................'})
+            <div style="font-size: 12px; color: #334155;">
+              (...................................................)
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-              ตำแหน่ง: เภสัชกร / เจ้าหน้าที่คลัง
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+              ตำแหน่ง ...........................................
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
               วันที่: ....../....../............
             </div>
           </div>
 
           <!-- Column 3: ผู้รับยา -->
           <div style="flex: 1; text-align: center; border-right: 1px dashed #cbd5e1; padding-right: 8px;">
-            <div style="font-size: 12px; color: #475569; margin-bottom: 30px;">
+            <div style="font-size: 12px; color: #475569; margin-bottom: 32px;">
               (3) ผู้รับยา
             </div>
             <div style="border-bottom: 1px dotted #64748b; width: 85%; margin: 0 auto 6px auto;"></div>
-            <div style="font-size: 12px; font-weight: bold; color: #0f172a;">
-              (${slip.receiverName || slip.requesterName || '...................................................'})
+            <div style="font-size: 12px; color: #334155;">
+              (...................................................)
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-              ตำแหน่ง: ผู้รับมอบเวชภัณฑ์
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+              ตำแหน่ง ...........................................
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
               วันที่: ....../....../............
             </div>
           </div>
 
           <!-- Column 4: ผู้อนุมัติ -->
           <div style="flex: 1; text-align: center;">
-            <div style="font-size: 12px; color: #475569; margin-bottom: 30px;">
+            <div style="font-size: 12px; color: #475569; margin-bottom: 32px;">
               (4) ผู้อนุมัติ
             </div>
             <div style="border-bottom: 1px dotted #64748b; width: 85%; margin: 0 auto 6px auto;"></div>
-            <div style="font-size: 12px; font-weight: bold; color: #0f172a;">
-              (${slip.approverName || '...................................................'})
+            <div style="font-size: 12px; color: #334155;">
+              (...................................................)
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-              ตำแหน่ง: หัวหน้ากลุ่มงาน / ผู้อำนวยการ
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+              ตำแหน่ง ...........................................
             </div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
               วันที่: ....../....../............
             </div>
           </div>
