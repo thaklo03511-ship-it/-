@@ -62,7 +62,6 @@ export const QuickTransactionModal: React.FC<QuickTransactionModalProps> = ({
 
   // New lot fields
   const [newLotNo, setNewLotNo] = useState<string>('');
-  const [newMfgDate, setNewMfgDate] = useState<string>('');
   const [newExpDate, setNewExpDate] = useState<string>('');
   const [newPackaging, setNewPackaging] = useState<string>('');
   const [newUnitPrice, setNewUnitPrice] = useState<string>('');
@@ -84,7 +83,6 @@ export const QuickTransactionModal: React.FC<QuickTransactionModalProps> = ({
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
     setNewExpDate(d.toISOString().slice(0, 10));
-    setNewMfgDate(new Date().toISOString().slice(0, 10));
   }, [selectedHerbId, currentHerb]);
 
   const currentLot = currentHerb?.lots.find(l => l.id === selectedLotId) || currentHerb?.lots[0];
@@ -169,7 +167,7 @@ export const QuickTransactionModal: React.FC<QuickTransactionModalProps> = ({
 
       onSaveTransaction(currentHerb.id, newLotId, txData, {
         lotNo: newLotNo.trim(),
-        mfgDate: newMfgDate || undefined,
+        mfgDate: undefined,
         expDate: newExpDate,
         packaging: newPackaging.trim() || currentHerb.defaultPackaging,
         unitPrice: parseFloat(newUnitPrice) || 0,
@@ -457,18 +455,6 @@ export const QuickTransactionModal: React.FC<QuickTransactionModalProps> = ({
 
                     <div>
                       <label className="block text-slate-700 font-medium mb-1">
-                        วันที่ผลิต (Mfg.date)
-                      </label>
-                      <input
-                        type="date"
-                        value={newMfgDate}
-                        onChange={(e) => setNewMfgDate(e.target.value)}
-                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-md text-xs focus:ring-1 focus:ring-emerald-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-medium mb-1">
                         ขนาดบรรจุ
                       </label>
                       <input
@@ -495,7 +481,7 @@ export const QuickTransactionModal: React.FC<QuickTransactionModalProps> = ({
                       />
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-2">
                       <label className="block text-slate-700 font-medium mb-1">
                         แหล่งผลิต / ผู้ผลิต / จัดส่ง
                       </label>

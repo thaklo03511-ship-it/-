@@ -81,7 +81,6 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
   // New Lot form state
   const [isAddingLot, setIsAddingLot] = useState(false);
   const [newLotNo, setNewLotNo] = useState('');
-  const [newMfgDate, setNewMfgDate] = useState(new Date().toISOString().slice(0, 10));
   const [newExpDate, setNewExpDate] = useState('');
   const [newPackaging, setNewPackaging] = useState(herb.defaultPackaging);
   const [newUnitPrice, setNewUnitPrice] = useState(herb.lots[0]?.unitPrice ? String(herb.lots[0].unitPrice) : '100');
@@ -365,7 +364,7 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
     if (initQty > 0) {
       initialTxs.push({
         id: `tx-${Date.now()}`,
-        date: newMfgDate || new Date().toISOString().slice(0, 10),
+        date: new Date().toISOString().slice(0, 10),
         broughtForward: 0,
         received: initQty,
         dispensed: 0,
@@ -379,7 +378,7 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
     const newLot: StockCardLot = {
       id: lotId,
       lotNo: newLotNo.trim(),
-      mfgDate: newMfgDate || undefined,
+      mfgDate: undefined,
       expDate: newExpDate,
       packaging: newPackaging || herb.defaultPackaging,
       unitPrice: parseFloat(newUnitPrice) || 0,
@@ -411,7 +410,6 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
     setNewExpDate(d.toISOString().slice(0, 10));
-    setNewMfgDate(new Date().toISOString().slice(0, 10));
     setNewPackaging(herb.defaultPackaging);
     setNewUnitPrice(herb.lots[0]?.unitPrice ? String(herb.lots[0].unitPrice) : '100');
     setNewSupplier('ฝ่ายผลิตยาสมุนไพร รพ.');
@@ -626,15 +624,6 @@ export const StockCardDetailModal: React.FC<StockCardDetailModalProps> = ({
                   />
                 </div>
 
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">วันที่ผลิต (Mfg.date)</label>
-                  <input
-                    type="date"
-                    value={newMfgDate}
-                    onChange={(e) => setNewMfgDate(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                  />
-                </div>
 
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">ขนาดบรรจุ</label>
