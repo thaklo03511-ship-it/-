@@ -55,9 +55,10 @@ export interface StockSummaryStats {
   lowStockCount: number;
   expiringCount: number;
   expiredCount: number;
+  zeroStockCount: number;
 }
 
-export type ViewFilter = 'all' | 'low-stock' | 'expiring' | 'expired';
+export type ViewFilter = 'all' | 'low-stock' | 'expiring' | 'expired' | 'zero-stock';
 
 export interface RequisitionItem {
   id: string;

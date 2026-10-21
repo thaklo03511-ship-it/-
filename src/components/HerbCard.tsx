@@ -8,7 +8,8 @@ import {
   Boxes,
   Printer,
   ChevronRight,
-  Info
+  Info,
+  Trash2
 } from 'lucide-react';
 import { HerbItem } from '../types';
 import { getHerbTotalStock, getActiveLot, getExpiryStatus, formatDateThai, getLotBalance } from '../utils/stockUtils';
@@ -18,6 +19,7 @@ interface HerbCardProps {
   onOpenCard: (herb: HerbItem) => void;
   onQuickTx: (herb: HerbItem) => void;
   onPrintSingle: (herb: HerbItem) => void;
+  onDelete?: (herb: HerbItem) => void;
 }
 
 export const HerbCard: React.FC<HerbCardProps> = ({
@@ -25,6 +27,7 @@ export const HerbCard: React.FC<HerbCardProps> = ({
   onOpenCard,
   onQuickTx,
   onPrintSingle,
+  onDelete,
 }) => {
   const totalStock = getHerbTotalStock(herb);
   const activeLot = getActiveLot(herb);
@@ -44,11 +47,15 @@ export const HerbCard: React.FC<HerbCardProps> = ({
           <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200/60 truncate max-w-[180px]">
             {herb.category}
           </span>
-          {isLowStock && (
+          {totalStock === 0 ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200 shrink-0">
+              ไม่ได้ใช้ (สต๊อก 0)
+            </span>
+          ) : isLowStock ? (
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
               <AlertTriangle className="w-3 h-3" /> สต๊อกต่ำ
             </span>
-          )}
+          ) : null}
         </div>
 
         {/* Medicine Name */}
@@ -165,11 +172,22 @@ export const HerbCard: React.FC<HerbCardProps> = ({
         <button
           type="button"
           onClick={() => onPrintSingle(herb)}
-          className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+          className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
           title="พิมพ์ Stock Card ของสมุนไพรนี้"
         >
           <Printer className="w-4 h-4" />
         </button>
+
+        {onDelete && (
+          <button
+            type="button"
+            onClick={() => onDelete(herb)}
+            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+            title="ลบรายการยานี้ออก (ยาที่ไม่ได้ใช้)"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </div>
   );

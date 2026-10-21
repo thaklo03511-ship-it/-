@@ -23,7 +23,8 @@ import {
   Unlock,
   KeyRound,
   ShieldCheck,
-  ShieldAlert
+  ShieldAlert,
+  Trash2
 } from 'lucide-react';
 import { ViewFilter, HerbCategory, StockSummaryStats } from '../types';
 import { AuthRole } from '../utils/authUtils';
@@ -361,6 +362,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </span>
                   </button>
                 )}
+
+                <button
+                  type="button"
+                  onClick={() => onFilterChange('zero-stock')}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    currentFilter === 'zero-stock'
+                      ? 'bg-slate-100 text-slate-900 font-bold border border-slate-300'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Trash2 className="w-3.5 h-3.5 text-slate-500" />
+                    <span>ยาที่ไม่ได้ใช้ (สต๊อก 0)</span>
+                  </div>
+                  <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 font-semibold">
+                    {stats.zeroStockCount}
+                  </span>
+                </button>
               </div>
 
               {/* Category Filter */}

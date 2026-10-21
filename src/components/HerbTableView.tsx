@@ -4,7 +4,8 @@ import {
   ArrowLeftRight, 
   Printer, 
   AlertTriangle,
-  ChevronRight
+  ChevronRight,
+  Trash2
 } from 'lucide-react';
 import { HerbItem } from '../types';
 import { getHerbTotalStock, getActiveLot, getExpiryStatus, formatDateThai, getLotBalance } from '../utils/stockUtils';
@@ -14,6 +15,7 @@ interface HerbTableViewProps {
   onOpenCard: (herb: HerbItem) => void;
   onQuickTx: (herb: HerbItem) => void;
   onPrintSingle: (herb: HerbItem) => void;
+  onDelete?: (herb: HerbItem) => void;
 }
 
 export const HerbTableView: React.FC<HerbTableViewProps> = ({
@@ -21,6 +23,7 @@ export const HerbTableView: React.FC<HerbTableViewProps> = ({
   onOpenCard,
   onQuickTx,
   onPrintSingle,
+  onDelete,
 }) => {
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
@@ -68,14 +71,21 @@ export const HerbTableView: React.FC<HerbTableViewProps> = ({
                       >
                         {herb.name}
                       </button>
-                      {isLowStock && (
+                      {totalStock === 0 ? (
+                        <span 
+                          className="inline-flex text-[10px] font-semibold px-1.5 py-0.2 rounded-sm bg-slate-100 text-slate-500 border border-slate-200 shrink-0" 
+                          title="ยาที่ไม่ได้ใช้ (สต๊อก 0)"
+                        >
+                          ไม่ได้ใช้
+                        </span>
+                      ) : isLowStock ? (
                         <span 
                           className="inline-flex text-amber-600" 
                           title={`สต๊อกต่ำกว่าเกณฑ์ (${herb.minStockAlert} ${herb.defaultUnit})`}
                         >
                           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                         </span>
-                      )}
+                      ) : null}
                     </div>
                     {herb.indications && (
                       <span className="text-xs text-slate-400 block truncate max-w-xs">
@@ -154,11 +164,22 @@ export const HerbTableView: React.FC<HerbTableViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onPrintSingle(herb)}
-                        className="p-1 text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-md transition-colors"
+                        className="p-1 text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-md transition-colors cursor-pointer"
                         title="พิมพ์ Stock Card"
                       >
                         <Printer className="w-4 h-4" />
                       </button>
+
+                      {onDelete && (
+                        <button
+                          type="button"
+                          onClick={() => onDelete(herb)}
+                          className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
+                          title="ลบรายการยานี้ออก (ยาที่ไม่ได้ใช้)"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

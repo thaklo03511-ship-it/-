@@ -35,12 +35,13 @@ import { Sidebar } from './components/Sidebar';
 import { LoginScreen } from './components/LoginScreen';
 import { ChangePinModal } from './components/ChangePinModal';
 import { UnlockModal } from './components/UnlockModal';
+import { DeleteHerbModal } from './components/DeleteHerbModal';
 import { 
   getAuthSession, 
   clearAuthSession, 
   AuthRole 
 } from './utils/authUtils';
-import { Search, PlusCircle, RotateCcw, FileSpreadsheet, HardDrive, Printer, Building2, FileDown, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Search, PlusCircle, RotateCcw, FileSpreadsheet, HardDrive, Printer, Building2, FileDown, CheckCircle2, ShieldAlert, Trash2 } from 'lucide-react';
 
 export default function App() {
   // Load herbs from localStorage or default data
@@ -90,6 +91,8 @@ export default function App() {
   const [isRequisitionOpen, setIsRequisitionOpen] = useState<boolean>(false);
   const [requisitionPreSelectedHerb, setRequisitionPreSelectedHerb] = useState<HerbItem | null>(null);
   const [printHerb, setPrintHerb] = useState<HerbItem | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [herbToDelete, setHerbToDelete] = useState<HerbItem | null>(null);
 
   // Authentication & Security State
   const [authSession, setAuthSession] = useState<{ isAuthenticated: boolean; role: AuthRole } | null>(() => {
@@ -181,6 +184,9 @@ export default function App() {
       }
       if (currentFilter === 'expired') {
         return expStatus?.status === 'expired';
+      }
+      if (currentFilter === 'zero-stock') {
+        return totalStock === 0;
       }
 
       return true;
@@ -280,6 +286,43 @@ export default function App() {
     requireAdmin('เพิ่มรายการยาสมุนไพรใหม่', () => {
       setHerbs(prev => [newHerb, ...prev]);
       showToast(`เพิ่มยา "${newHerb.name}" เรียบร้อยแล้ว`);
+    });
+  };
+
+  // Delete herb medicine handler (with admin authorization)
+  const handleRequestDeleteHerb = (herb: HerbItem) => {
+    requireAdmin(`ลบรายการยา "${herb.name}"`, () => {
+      setHerbToDelete(herb);
+      setIsDeleteModalOpen(true);
+    });
+  };
+
+  // Confirm delete herb
+  const handleConfirmDeleteHerb = (herb: HerbItem) => {
+    setHerbs(prev => prev.filter(h => h.id !== herb.id));
+    if (activeStockCardHerb?.id === herb.id) {
+      setActiveStockCardHerb(null);
+    }
+    setIsDeleteModalOpen(false);
+    setHerbToDelete(null);
+    showToast(`ลบรายการยา "${herb.name}" ออกจากระบบเรียบร้อยแล้ว`);
+  };
+
+  // Batch delete all zero-stock (unused) medicines
+  const handleDeleteAllZeroStockHerbs = () => {
+    const zeroHerbs = herbs.filter(h => getHerbTotalStock(h) === 0);
+    if (zeroHerbs.length === 0) {
+      showToast('ไม่พบรายการยาที่มียอดสต๊อกคงเหลือ 0');
+      return;
+    }
+    requireAdmin('ลบยาสมุนไพรที่ไม่ได้ใช้ทั้งหมด (สต๊อก 0)', () => {
+      if (window.confirm(`คุณต้องการลบยาที่ไม่ได้ใช้ (ยอดสต๊อก 0) ทั้งหมดจำนวน ${zeroHerbs.length} รายการออกจากระบบใช่หรือไม่?\n\n(รายการยาที่ถูกลบจะไม่สามารถกู้คืนได้ ยกเว้นกดรีเซ็ตข้อมูลเริ่มต้น)`)) {
+        setHerbs(prev => prev.filter(h => getHerbTotalStock(h) > 0));
+        if (activeStockCardHerb && getHerbTotalStock(activeStockCardHerb) === 0) {
+          setActiveStockCardHerb(null);
+        }
+        showToast(`ลบรายการยาที่ไม่ได้ใช้ทั้งหมด ${zeroHerbs.length} รายการเรียบร้อยแล้ว`);
+      }
     });
   };
 
@@ -488,6 +531,26 @@ export default function App() {
             onViewModeChange={setViewMode}
           />
 
+          {/* Zero-Stock / Unused Medicine Notice Banner */}
+          {currentFilter === 'zero-stock' && filteredHerbs.length > 0 && (
+            <div className="p-3.5 bg-slate-100 border border-slate-300 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-700">
+              <div className="flex items-center gap-2">
+                <Trash2 className="w-4 h-4 text-slate-500 shrink-0" />
+                <span>
+                  พบ <strong>{filteredHerbs.length} รายการยาที่ไม่ได้ใช้ (ยอดคงเหลือ 0)</strong> — ท่านสามารถกดปุ่มลบ (รูปถังขยะ) ที่แต่ละรายการ หรือกดปุ่มลบทั้งหมด
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleDeleteAllZeroStockHerbs}
+                className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 font-semibold text-rose-700 bg-white hover:bg-rose-50 border border-rose-200 rounded-lg shadow-2xs transition-colors cursor-pointer shrink-0"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>ลบยาที่ไม่ได้ใช้ทั้งหมด ({filteredHerbs.length} รายการ)</span>
+              </button>
+            </div>
+          )}
+
           {/* List Content */}
           {filteredHerbs.length > 0 ? (
             viewMode === 'grid' ? (
@@ -499,6 +562,7 @@ export default function App() {
                     onOpenCard={setActiveStockCardHerb}
                     onQuickTx={handleOpenQuickTxForHerb}
                     onPrintSingle={handlePrintSingleHerb}
+                    onDelete={handleRequestDeleteHerb}
                   />
                 ))}
               </div>
@@ -508,6 +572,7 @@ export default function App() {
                 onOpenCard={setActiveStockCardHerb}
                 onQuickTx={handleOpenQuickTxForHerb}
                 onPrintSingle={handlePrintSingleHerb}
+                onDelete={handleRequestDeleteHerb}
               />
             )
           ) : (
@@ -633,6 +698,7 @@ export default function App() {
             setUnlockActionTitle(actionName);
             setIsUnlockOpen(true);
           }}
+          onDeleteHerb={handleRequestDeleteHerb}
         />
       )}
 
@@ -724,6 +790,17 @@ export default function App() {
         }}
         onUnlocked={handleUnlockedAdmin}
         actionTitle={unlockActionTitle}
+      />
+
+      {/* CONFIRM DELETE MODAL: Safely delete unused or unwanted medicine */}
+      <DeleteHerbModal
+        isOpen={isDeleteModalOpen}
+        herb={herbToDelete}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setHerbToDelete(null);
+        }}
+        onConfirmDelete={handleConfirmDeleteHerb}
       />
 
       {/* Floating System Toast Notification */}

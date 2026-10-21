@@ -125,10 +125,15 @@ export function calculateStockStats(herbs: HerbItem[]): StockSummaryStats {
   let lowStockCount = 0;
   let expiringCount = 0;
   let expiredCount = 0;
+  let zeroStockCount = 0;
 
   herbs.forEach(herb => {
     const totalStock = getHerbTotalStock(herb);
     totalItemsInStock += totalStock;
+
+    if (totalStock === 0) {
+      zeroStockCount++;
+    }
 
     if (totalStock <= herb.minStockAlert) {
       lowStockCount++;
@@ -154,6 +159,7 @@ export function calculateStockStats(herbs: HerbItem[]): StockSummaryStats {
     lowStockCount,
     expiringCount,
     expiredCount,
+    zeroStockCount,
   };
 }
 

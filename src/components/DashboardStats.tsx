@@ -207,6 +207,19 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
               หมดอายุแล้ว ({stats.expiredCount})
             </button>
           )}
+
+          <button
+            type="button"
+            onClick={() => onFilterChange('zero-stock')}
+            className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-xl whitespace-nowrap transition-colors cursor-pointer ${
+              currentFilter === 'zero-stock'
+                ? 'bg-slate-800 text-white shadow-xs font-semibold'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+            title="กรองเฉพาะยาที่ไม่ได้ใช้หรือยอดคงเหลือเป็น 0"
+          >
+            ยาที่ไม่ได้ใช้ ({stats.zeroStockCount})
+          </button>
         </div>
 
         {/* Category Filter & View Toggle */}
