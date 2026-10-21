@@ -30,7 +30,6 @@ export const AddHerbModal: React.FC<AddHerbModalProps> = ({
 
   // Initial Lot
   const [lotNo, setLotNo] = useState(`LOT-${String((new Date().getFullYear() + 543) % 100).padStart(2, '0')}${String(new Date().getMonth() + 1).padStart(2, '0')}01`);
-  const [mfgDate, setMfgDate] = useState(new Date().toISOString().slice(0, 10));
   const [expDate, setExpDate] = useState(() => {
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
@@ -77,7 +76,7 @@ export const AddHerbModal: React.FC<AddHerbModalProps> = ({
     if (initQty > 0) {
       initialTransactions.push({
         id: `tx-${Date.now()}`,
-        date: mfgDate || new Date().toISOString().slice(0, 10),
+        date: new Date().toISOString().slice(0, 10),
         broughtForward: 0,
         received: initQty,
         dispensed: 0,
@@ -91,7 +90,7 @@ export const AddHerbModal: React.FC<AddHerbModalProps> = ({
     const initialLot: StockCardLot = {
       id: lotId,
       lotNo: lotNo.trim(),
-      mfgDate: mfgDate || undefined,
+      mfgDate: undefined,
       expDate,
       packaging: defaultPackaging.trim(),
       unitPrice: parseFloat(unitPrice) || 0,
@@ -299,19 +298,7 @@ export const AddHerbModal: React.FC<AddHerbModalProps> = ({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  วันที่ผลิต (Mfg.date)
-                </label>
-                <input
-                  type="date"
-                  value={mfgDate}
-                  onChange={(e) => setMfgDate(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900"
-                />
-              </div>
-
-              <div>
+              <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
                   แหล่งผลิต / ผู้จัดส่ง
                 </label>
